@@ -4,6 +4,8 @@ import re
 import sys
 #------------------- macro ------------------
 
+useCustomVersionAtosl = True
+
 staticStringDefaultPathToLibPrefix = os.path.expanduser("~") + "/Library/Developer/Xcode/iOS DeviceSupport/"
 
 
@@ -14,6 +16,30 @@ def symbolicateAddress(binaryPath, archtechture, loadAddress, lookUpAddrList):
     """
     #command = "atosl -o %s -A %s -l %s" % (binaryPath, archtechture, loadAddress)
     command = ["atosl",'-o', binaryPath, '-A', archtechture, '-l', loadAddress]
+    command.extend( lookUpAddrList )
+    output = ""
+    
+    try:
+        output = subprocess.check_output(command , shell = False)
+    # http://cleverdeng.iteye.com/blog/888986
+    # Acoording to this blog, it expend 25% more time
+    except:
+        print """[Error] when call atosl to symbolicate address. may be problems below :
+            atosl is not installed;
+            binary is not exsit;
+            arch is not contained in the binary;\n""" + " ".join(command)
+    return output
+
+def symbolicateAddressCustomed(binaryPath, archtechture, loadAddress, lookUpAddrList, isDsym):
+    """ function to symbolicate address
+        """
+    #command = "atosl -o %s -A %s -l %s" % (binaryPath, archtechture, loadAddress)
+    command= []
+    if isDsym:
+        command = ["atosl",'-o', binaryPath, '-A', archtechture,'-d', '-l', loadAddress]
+    else:
+        command = ["atosl",'-o', binaryPath, '-A', archtechture, '-l', loadAddress]
+    
     command.extend( lookUpAddrList )
     output = ""
 
@@ -122,6 +148,21 @@ class OurAppImage(Image):
     def __init__(self, text, pathToDsym):
         super(OurAppImage,self).__init__(text,"whatever")
         self.path = pathToDsym
+        pass
+    
+    def symbolicateThreadLine(self, listOfThreadLine):
+        addressList = [threadLine.address for threadLine in listOfThreadLine]
+        output = symbolicateAddressCustomed(self.path, self.archtecture, self.loadAddressString, addressList, useCustomVersionAtosl)
+        
+        # save the formatted text in thread line object itself
+        outputList = output.splitlines()
+        if len(outputList) != len(addressList):
+            print "[Error] non-correct output of atos of image %s" % self.name
+        else:
+            i = 0
+            for threadLine in listOfThreadLine:
+                threadLine.symbolicatedText = outputList[i]
+                i += 1
         pass
 
 
