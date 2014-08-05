@@ -128,20 +128,45 @@ class Image(object):
     def __eq__(self, other):
         return (self.name, self.loadAddress) == (other.name, other.loadAddress)
 
+    # def symbolicateThreadLine(self, listOfThreadLine):
+    #     addressList = [threadLine.address for threadLine in listOfThreadLine]
+    #     output = symbolicateAddress(self.path, self.archtecture, self.loadAddressString, addressList)
+    # 
+    #     # save the formatted text in thread line object itself
+    #     outputList = output.splitlines()
+    #     if len(outputList) != len(addressList):
+    #         print "[Error] non-correct output of atos of image %s" % self.name
+    #     else:
+    #         i = 0
+    #         for threadLine in listOfThreadLine:
+    #             threadLine.symbolicatedText = outputList[i]
+    #             i += 1
+    #     pass
+     
     def symbolicateThreadLine(self, listOfThreadLine):
-        addressList = [threadLine.address for threadLine in listOfThreadLine]
-        output = symbolicateAddress(self.path, self.archtecture, self.loadAddressString, addressList)
-
-        # save the formatted text in thread line object itself
+        
+        # only use atosl symbolicate unique address
+        uniqueList = list( set([threadLine.address for threadLine in listOfThreadLine]) )
+        output = symbolicateAddress(self.path, self.archtecture, self.loadAddressString, uniqueList)
         outputList = output.splitlines()
-        if len(outputList) != len(addressList):
+
+        if len(outputList) != len(uniqueList):
             print "[Error] non-correct output of atos of image %s" % self.name
-        else:
-            i = 0
-            for threadLine in listOfThreadLine:
-                threadLine.symbolicatedText = outputList[i]
-                i += 1
+            
+        # save the result to a dict, then get the final result from this dict
+        # resultDict, key is address, value is formatted text
+        resultDict = {}
+
+        for i in xrange(len(uniqueList)):
+            address = uniqueList[i]
+            formatedText = outputList[i]
+            resultDict[address] =  formatedText
+        
+        for threadLine in listOfThreadLine:
+            threadLine.symbolicatedText = resultDict[threadLine.address]
         pass
+            
+    
 
 class OurAppImage(Image):     
 
@@ -151,18 +176,22 @@ class OurAppImage(Image):
         pass
     
     def symbolicateThreadLine(self, listOfThreadLine):
-        addressList = [threadLine.address for threadLine in listOfThreadLine]
-        output = symbolicateAddressCustomed(self.path, self.archtecture, self.loadAddressString, addressList, useCustomVersionAtosl)
-        
-        # save the formatted text in thread line object itself
+        uniqueList = list( set([threadLine.address for threadLine in listOfThreadLine]) )
+        output = symbolicateAddressCustomed(self.path, self.archtecture, self.loadAddressString, uniqueList, useCustomVersionAtosl)
         outputList = output.splitlines()
-        if len(outputList) != len(addressList):
+        
+        if len(outputList) != len(uniqueList):
             print "[Error] non-correct output of atos of image %s" % self.name
-        else:
-            i = 0
-            for threadLine in listOfThreadLine:
-                threadLine.symbolicatedText = outputList[i]
-                i += 1
+            
+        resultDict = {}
+        
+        for i in xrange(len(uniqueList)):
+            address = uniqueList[i]
+            formatedText = outputList[i]
+            resultDict[address] =  formatedText
+        
+        for threadLine in listOfThreadLine:
+            threadLine.symbolicatedText = resultDict[threadLine.address]
         pass
 
 
