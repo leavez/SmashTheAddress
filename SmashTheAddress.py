@@ -514,7 +514,6 @@ def getPathsFromCommandArguments():
 
             i = 0
             for v in sys.argv[1:]:
-                print v
                 if i % 2 == 0:
                     assert( v[:1] == "-")
                 else:
@@ -537,7 +536,7 @@ def getPathsFromCommandArguments():
 
 
             crashPath = argvDict["-f"]
-            dsym = argvDict["-d"]
+            dsymPath = argvDict["-d"]
             if "-l" in argvDict:
                 systemLibRootPath = argvDict["-l"]
     except:
