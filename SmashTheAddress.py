@@ -114,6 +114,7 @@ class Image(object):
             i = 0
             for threadLine in listOfThreadLine:
                 threadLine.symbolicatedText = outputList[i]
+                i += 1
         pass
 
 class OurAppImage(Image):     
