@@ -346,7 +346,7 @@ class CrashFile(object):
                 # header section
                 self.headerSection = HeaderInfoSection(textParts[0].strip())
                 self.systemLibRootPath = systemLibRootPath.rstrip("/") + "/"+self.headerSection.systemVersion + "/Symbols"  # init path for lib
-                if os.path.isdir(self.systemLibRootPath): 
+                if not os.path.isdir(self.systemLibRootPath):
                     print "[Warning] path to system dynamic lib is invalid.\n" + self.systemLibRootPath
                     
                 # exception section
@@ -513,10 +513,11 @@ if __name__ == "__main__":
         pass
     else:
         (crashPath,dsymPath,systemLibRootPath) = paths
-        # crashPath = "/Users/luna/Downloads/atos/crash"
-        # crashPath = "/Users/leave/wor/symbolication/atos/a app/crash"
-        # dsymPath = '/Users/leave/wor/symbolication/atos/MyPaper.app.dSYM/Contents/Resources/DWARF/MyPaper'
-        # systemLibRootPath = staticStringDefaultPathToLibPrefix
         print SmashTheAddressesMain(crashPath,dsymPath,systemLibRootPath)
+    
+#    crashPath = os.path.expanduser("~") +"/wor/symbolication/atos/a app/crash"
+#    dsymPath = os.path.expanduser("~") +'/wor/symbolication/atos/a app/MyPaper.app.dSYM/Contents/Resources/DWARF/MyPaper'
+#    systemLibRootPath = staticStringDefaultPathToLibPrefix
+#    print SmashTheAddressesMain(crashPath,dsymPath,systemLibRootPath)
 
 
