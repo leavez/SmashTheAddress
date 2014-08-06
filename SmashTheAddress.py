@@ -157,7 +157,7 @@ class Image(object):
         # resultDict, key is address, value is formatted text
         resultDict = {}
 
-        for i in xrange(len(uniqueList)):
+        for i in xrange(len(outputList)):
             address = uniqueList[i]
             formatedText = outputList[i]
             resultDict[address] =  formatedText
@@ -564,7 +564,7 @@ def getPathsFromCommandArguments():
             crashPath = argvDict["-f"]
             dsymPath = argvDict["-d"]
             if "-l" in argvDict:
-                systemLibRootPath = argvDict["-l"]
+                systemLibRootPath = os.path.abspath(argvDict["-l"])
     except:
         print "\n        [Invalid Arguments]  Arguments should in format like:" + helpInfoString
         return
