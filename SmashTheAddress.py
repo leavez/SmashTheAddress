@@ -506,19 +506,16 @@ def getPathsFromCommandArguments():
     dsymPath = ''
     systemLibRootPath = staticStringDefaultPathToLibPrefix
 
-    helpInfoStart = "    SmashTheAddress. A tool to symbolicate iOS's crash log using `atosl`. Arguments should in format like:"
+    helpInfoStart = "\n        SmashTheAddress. A tool to symbolicate iOS's crash log using `atosl`. Arguments should in format like:"
     helpInfoString = """
-
+    
         1 `SmashTheAddress path/to/dsym  path/to/crashlog`   or
         2 `SmashTheAddress -d path/to/dsym -l path/to/Lib/root  -f path/to/crashlog`
 
-    requird:
         -f         : path to crashlog file
         -d         : path to dSYM file (not the bundle of .dsym file, but the binary in that
-
-    optional:
-        -h, --help : Print this.
         -l         : set the root path of iOS's system dynamic link libs. Default value is `~/Library/Developer/Xcode/iOS DeviceSupport/`
+        -h, --help : Print this.
 """
 
     numOfArgv = len(sys.argv)
@@ -569,7 +566,7 @@ def getPathsFromCommandArguments():
             if "-l" in argvDict:
                 systemLibRootPath = argvDict["-l"]
     except:
-        print "\n    [Invalid Arguments]  Arguments should in format like:" + helpInfoString
+        print "\n        [Invalid Arguments]  Arguments should in format like:" + helpInfoString
         return
 
     return (crashPath,dsymPath,systemLibRootPath)        
